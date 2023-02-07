@@ -1,0 +1,49 @@
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  name: sandbox2230
+  labels:
+    name: sandbox2230
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: gitops
+  annotations: {}
+spec:
+  hubAcceptsClient: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auto-import-secret
+  namespace: sandbox2230
+stringData:
+  autoImportRetry: "2"
+  token: sha256~eCgLZ_CgcX4fMAPq_ByYNl7j2_U_9p-WUeh9L-Jl_VQ
+  server: https://api.cluster-cxzmq.cxzmq.sandbox2230.opentlc.com:6443
+type: Opaque
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: sandbox2230
+  namespace: sandbox2230
+spec:
+  clusterName: sandbox2230
+  clusterNamespace: sandbox2230
+  clusterLabels:
+    name: sandbox2230
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: gitops
+  applicationManager:
+    enabled: true
+    argocdCluster: false
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  certPolicyController:
+    enabled: true
+  iamPolicyController:
+    enabled: true

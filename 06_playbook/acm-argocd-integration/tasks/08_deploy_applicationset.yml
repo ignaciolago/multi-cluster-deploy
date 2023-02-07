@@ -1,0 +1,13 @@
+---
+- name: Validate parameters
+  ansible.builtin.assert:
+    that:
+
+    quiet: true
+
+- name: "Create ArgoCD application set in RH ACM"
+  ansible.builtin.command: >
+     oc apply -f "{{ files_folder }}"/argocd_application-set.yaml
+  register: argocd_applicationset
+
+- debug: msg="{{ argocd_applicationset.stdout }}"

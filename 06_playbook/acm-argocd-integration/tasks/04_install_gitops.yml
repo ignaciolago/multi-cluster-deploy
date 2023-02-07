@@ -1,0 +1,4 @@
+---
+- name: "Deploy the GitOps Operator"
+  ansible.builtin.command: >
+     oc apply -f "{{ files_folder }}"/argocd_openshift-gitops-sub.yaml

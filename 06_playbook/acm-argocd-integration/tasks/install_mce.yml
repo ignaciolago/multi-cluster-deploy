@@ -1,0 +1,36 @@
+# ---
+# - name: Validate parameters
+#   ansible.builtin.assert:
+#     that:
+#       - mce_namespace is defined
+#     quiet: true
+
+# - name: Check for an existing deployment
+#   become: yes
+#   ansible.builtin.stat:
+#     path: "{{  }}"
+#   register: existing_mce_deploy
+
+
+# - name: "Use the MCE Namespace or Create it if does not exist"
+#   ansible.builtin.command: >
+#      oc create namespace $NAMESPACE || oc project $NAMESPACE
+#   become: yes
+#   when: existing_mce_deploy == "asd"
+
+# # Template the actions cli to override variables
+# - name: Replace the variables in the the templates files
+#   template:
+#     src:  "{{ local_path.stat.path }}/roles/keycloak/templates/actions.cli.j2"
+#     dest: "{{ keycloak_jboss_home }}/extensions/actions.cli"
+
+# - name: "Create the resources on the Cluster"
+#   ansible.builtin.command: >
+#      oc apply -f "{{ files_folder }}"/mce-operator-group.yaml
+#      oc apply -f "{{ files_folder }}"/mce-subscription.yaml
+#   become: yes
+
+# - name: "Deploy the MCE Operator"
+#   ansible.builtin.command: >
+#     oc apply -f "{{ files_folder }}"/mce-custom-resource.yaml
+#   become: yes

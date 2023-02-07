@@ -1,0 +1,67 @@
+---
+# tasks file for acm-argocd-integration
+# This playbook is for installing and deploy application sets using ARGOCD and RHACM
+
+
+# - name: Install Red Hat MultiClusterHub Operator
+#   ansible.builtin.include_tasks: 01_install_mce.yml
+#   tags:
+#     - 01_install_mce
+
+# - name: Install Red Hat Advanced Cluster Management Operator
+#   ansible.builtin.include_tasks: 02_install_acm.yml
+#   tags:
+#     - 02_install_acm
+
+- name: Deploy MultiClusterHub
+  ansible.builtin.include_tasks:
+    file: 03_deploy_mch.yml
+    apply: 
+      tags: 03_deploy_mch
+  tags:
+    - 03_deploy_mch
+
+- name: Install Red Hat Openshift GitOps Operator
+  ansible.builtin.include_tasks: 04_install_gitops.yml
+  tags:
+    - 04_install_gitops
+
+- name: Integrate Red Hat Openshift GitOps & Red Hat Advanced Cluster Management
+  ansible.builtin.include_tasks:
+    file: 05_integrate_acm_gitops.yml
+    apply: 
+      tags: 05_integrate_acm_gitops
+  tags:
+    - 05_integrate_acm_gitops
+
+- name: Import Remote Cluster
+  ansible.builtin.include_tasks: 
+    file: 06_import_remotecluster.yml
+    apply: 
+      tags: 06_import_remotecluster
+  tags:
+    - 06_import_remotecluster
+
+- name: Steps to get the ArgoCD Token
+  ansible.builtin.include_tasks: 
+    file: 07_get_argocd_token.yml
+    apply: 
+      tags: 07_get_argocd_token
+  tags:
+    - 07_get_argocd_token
+
+- name: Deploy application
+  ansible.builtin.include_tasks:
+    file: 08_deploy_applicationset.yml
+    apply: 
+      tags: 08_deploy_applicationset
+  tags:
+    - 08_deploy_applicationset
+
+- name: Sync Application in ArgoCD
+  ansible.builtin.include_tasks: 
+    file: 09_sync_app.yml
+    apply: 
+      tags: 09_sync_app
+  tags:
+    - 09_sync_app

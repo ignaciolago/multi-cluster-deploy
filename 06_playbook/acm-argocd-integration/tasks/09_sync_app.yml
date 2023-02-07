@@ -1,0 +1,13 @@
+---
+- name: "Sync ArgoCD Application"
+  ansible.builtin.uri:
+    url: "{{ argocd_route }}/api/v1/applications/{{ item }}/sync"
+    method: POST
+    headers:
+      authorization: "Bearer {{ argocd_token_fact }}"
+    validate_certs: false
+    return_content: true
+  register: app_sync_output
+  loop: "{{ applicationset_name }}"
+
+- debug: msg="{{ app_sync_output }}"

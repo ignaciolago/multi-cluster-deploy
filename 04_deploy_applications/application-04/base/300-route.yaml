@@ -1,0 +1,18 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: application-04
+  namespace: application-04
+  labels:
+    app: application-04
+    app.kubernetes.io/component: application-04
+    app.kubernetes.io/instance: application-04
+spec:
+  to:
+    kind: Service
+    name: application-04
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  port:
+    targetPort: 8080-tcp

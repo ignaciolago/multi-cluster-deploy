@@ -1,0 +1,48 @@
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  name: sandbox251
+  labels:
+    name: sandbox251
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: gitops
+  annotations: {}
+spec:
+  hubAcceptsClient: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auto-import-secret
+  namespace: sandbox251
+stringData:
+  autoImportRetry: "2"
+  token: sha256~2DPdhkofQy7x6fGCVgPEr316289h_pXmie9LY8Ee7Hk
+  server: https://api.cluster-gw6sn.gw6sn.sandbox251.opentlc.com:6443
+type: Opaque
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: sandbox251
+  namespace: sandbox251
+spec:
+  clusterName: sandbox251
+  clusterNamespace: sandbox251
+  clusterLabels:
+    name: sandbox251
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: gitops
+  applicationManager:
+    enabled: true
+    argocdCluster: false
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  certPolicyController:
+    enabled: true
+  iamPolicyController:
+    enabled: true

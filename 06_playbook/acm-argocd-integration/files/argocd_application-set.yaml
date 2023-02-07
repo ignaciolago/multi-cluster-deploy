@@ -1,0 +1,46 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: app08
+  namespace: openshift-gitops
+spec:
+  generators:
+    - clusterDecisionResource:
+        configMapRef: acm-placement
+        labelSelector:
+          matchLabels:
+            cluster.open-cluster-management.io/placement: app08-placement
+        requeueAfterSeconds: 180
+  template:
+    metadata:
+      name: app08-{{name}}
+      labels:
+        velero.io/exclude-from-backup: "true"
+    spec:
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/template/spec/containers/0/image
+      project: default
+      source:
+        repoURL: https://github.com/ignaciolago/demo-helm-charts.git
+        targetRevision: main
+        path: alpha/quarkus-chart
+      destination:
+        namespace: app08
+        server: "{{server}}"
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - PruneLast=true
+---
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: app08-placement
+  namespace: openshift-gitops
+spec:
+  clusterSets:
+    - gitops

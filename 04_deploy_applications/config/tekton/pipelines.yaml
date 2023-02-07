@@ -1,0 +1,107 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  creationTimestamp: '2023-01-23T13:00:30Z'
+  generation: 5
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          .: {}
+          'f:finally': {}
+          'f:params': {}
+          'f:resources': {}
+          'f:tasks': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2023-01-23T13:03:14Z'
+  name: build-and-deploy-spring-app
+  namespace: app04
+  resourceVersion: '1683132'
+  uid: 959b59f2-5b8d-46d2-94aa-e8b01f8f8bcc
+spec:
+  params:
+    - default: spring-app
+      description: name of the deployment to be patched
+      name: deployment-name
+      type: string
+    - default: 'https://github.com/ignaciolago/spring-app.git'
+      description: url of the git repo for the code of deployment
+      name: git-url
+      type: string
+    - default: app01
+      description: revision to be used from repo of the code for deployment
+      name: git-revision
+      type: string
+    - default: 'image-registry.openshift-image-registry.svc:5000/app04/spring-app'
+      description: image to be build from the code
+      name: IMAGE
+      type: string
+    - default: '0.1'
+      name: IMAGE-TAG
+      type: string
+  tasks:
+    - name: fetch-repository
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: deleteExisting
+          value: 'true'
+        - name: revision
+          value: $(params.git-revision)
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+    - name: run-maven-goals
+      params:
+        - name: GOALS
+          value:
+            - package
+      runAfter:
+        - fetch-repository
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: maven-settings
+          workspace: maven-settings
+    - name: build-image
+      params:
+        - name: TLSVERIFY
+          value: 'false'
+        - name: IMAGE
+          value: $(params.IMAGE)
+        - name: PATH_CONTEXT
+          value: target
+      runAfter:
+        - run-maven-goals
+      taskRef:
+        kind: ClusterTask
+        name: s2i-java
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+    - name: tag-for-app04
+      params:
+        - name: srcImageURL
+          value: 'docker://$(params.IMAGE):latest'
+        - name: destImageURL
+          value: 'docker://$(params.IMAGE):$(params.IMAGE-TAG)'
+      runAfter:
+        - build-image
+      taskRef:
+        kind: ClusterTask
+        name: skopeo-copy
+      workspaces:
+        - name: images-url
+          workspace: shared-workspace
+  workspaces:
+    - name: shared-workspace
+    - name: maven-settings

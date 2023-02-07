@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  creationTimestamp: null
+  name: application-01
+  namespace: application-01
+spec:
+  port:
+    targetPort: 8001-tcp
+  to:
+    kind: Service
+    name: application-01
+    weight: 100
+  wildcardPolicy: None

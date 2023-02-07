@@ -1,0 +1,31 @@
+---
+# vars file for acm-argocd-integration
+mce_namespace: multicluster-engine
+mce_operator_group: multicluster-engine
+acm_namespace: open-cluster-management
+acm_operator_group: open-cluster-management
+argocd_username: admin
+argocd_namespace: "{{ argocd_namespace }}"
+argocd_operator_group: "{{ argocd_operator_group }}"
+argocd_route: https://openshift-gitops-server-openshift-gitops.apps.cluster-nj2m2.nj2m2.sandbox634.opentlc.com
+integration_namespace: openshift-gitops
+#integration_operator_group: "{{ integration_operator_group }}"
+integration_cluster_name: "{{ integration_cluster_name }}"
+integration_cluster_number: "{{ integration_cluster_number }}"
+#ocp_username: kubeadmin
+#ocp_password: 8nyhw-nBP7N-XYJsX-bBnQm
+#ocp_api_url: https://api.cluster-gw6sn.gw6sn.sandbox251.opentlc.com:6443
+#ocp_token_url: https://api.cluster-gw6sn.gw6sn.sandbox251.opentlc.com:6443/oauth/authorize?clientid=openshift-challenging-client&response_type=token
+applicationset_name:
+  - app08-local-cluster
+  - app08-sandbox2230
+#  - app08-sandbox251
+#  - app07-sandbox251
+files_folder: ./acm-argocd-integration/files
+#remote_cluster_accesstoken: sha256~wgGXY7pGS4rObybiTI9NMQSnMHXIOUb3NoxgrQbqsYI
+#remote_cluster_url: https://api.cluster-x6sv7.x6sv7.sandbox2538.opentlc.com:6443
+cluster_name: 
+#  - sandbox634
+  - sandbox2230
+  - sandbox251
+

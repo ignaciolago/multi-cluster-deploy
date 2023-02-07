@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: argo-app
+  namespace: openshift-gitops
+spec:
+  generators:
+    - clusterDecisionResource:
+        configMapRef: acm-placement
+        labelSelector:
+          matchLabels:
+            cluster.open-cluster-management.io/placement: rhte2023-gitops-clusters
+        requeueAfterSeconds: 180
+  template:
+    metadata:
+      name: argo-app-{{name}}
+      labels:
+        velero.io/exclude-from-backup: "true"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/xbryan1/rhte-2023-acm-apps.git
+        targetRevision: main
+        path: rhte2023/04_deploy_applications/config/argocd
+      destination:
+        namespace: openshift-gitops
+        server: "{{server}}"
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: true
+        syncOptions:
+          - CreateNamespace=true
+          - PruneLast=true

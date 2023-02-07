@@ -1,0 +1,35 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: application-02
+  namespace: openshift-gitops
+spec:
+  generators:
+  - clusterDecisionResource:
+      configMapRef: acm-placement
+      labelSelector:
+        matchLabels:
+          cluster.open-cluster-management.io/placement: gitops-clusters
+      requeueAfterSeconds: 180
+  template:
+    metadata:
+      labels:
+        velero.io/exclude-from-backup: "true"
+      name: application-02-{{name}}
+    spec:
+      destination:
+        namespace: application-02
+        server: '{{server}}'
+      project: default
+      source:
+        path: 04_deploy_applications/application-02
+        repoURL: https://github.com/ignaciolago/multi-cluster-deploy.git
+        targetRevision: main
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - PruneLast=true

@@ -1,0 +1,18 @@
+# Tektoni Config - Disabling the automatic creation of RBAC resources
+---
+apiVersion: operator.tekton.dev/v1alpha1
+kind: TektonConfig
+metadata:
+  name: config
+spec:
+  params:
+  - name: createRbacResource
+    value: "false"
+  profile: all
+  targetNamespace: openshift-pipelines
+  addon:
+    params:
+    - name: clusterTasks
+      value: "true"
+    - name: pipelineTemplates
+      value: "true"

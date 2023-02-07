@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/component: application-01
+    app.kubernetes.io/instance: application-01
+  name: application-01
+  namespace: application-01
+spec:
+  ports:
+  - name: 8001-tcp
+    port: 8001
+    protocol: TCP
+    targetPort: 8001
+  selector:
+    app.kubernetes.io/component: application-01
+    app.kubernetes.io/instance: application-01
+status:
+  loadBalancer: {}

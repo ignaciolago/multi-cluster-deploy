@@ -1,0 +1,13 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bootstrap-gitops
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: openshift-gitops
+    server: 
+  project: default
+  source:
+    path: 02_bootstrap/base
+    repoURL: https://github.com/ignaciolago/multi-cluster-deploy.git

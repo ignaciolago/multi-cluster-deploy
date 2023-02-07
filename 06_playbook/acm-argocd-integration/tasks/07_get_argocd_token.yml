@@ -1,0 +1,46 @@
+---
+- name: Validate parameters
+  ansible.builtin.assert:
+    that:
+      - argocd_username is defined
+      - argocd_route is defined
+    quiet: true
+
+# - name: "Get OCP Acess Token"
+#   ansible.builtin.command: >
+#     curl -u "{{ ocp_username }}":"{{ ocp_password }}" -kI "{{ ocp_token_url }}"
+#   register: ocp_access_token_tmp
+
+# - debug: msg="{{ ocp_access_token_tmp.stdout }}"
+
+
+# - name: "Get OCP Acess Token"
+#   ansible.builtin.command: >
+#     grep -Po 'access_token=\K[^&]*' "{{ ocp_access_token_tmp.stdout }}" 
+#   register: ocp_access_token
+
+# - debug: msg="{{ ocp_access_token.stdout }}"
+
+- name: "Get ArgoCD Password"
+  ansible.builtin.command: >
+    oc get secret/openshift-gitops-cluster -n openshift-gitops -o jsonpath='{.data.admin\.password}'
+  register: argocd_password
+
+- debug: msg="{{ argocd_password.stdout | b64decode }}"
+
+
+- name: "Get ArgoCD Token"
+  ansible.builtin.uri:
+    url: 'https://openshift-gitops-server-openshift-gitops.apps.cluster-nj2m2.nj2m2.sandbox634.opentlc.com/api/v1/session'
+    method: POST
+    body: '{"username":"{{ argocd_username }}","password":"{{ argocd_password.stdout | b64decode }}"}'
+    body_format: json
+    validate_certs: false
+    return_content: true
+  register: argocd_token
+
+- debug: msg="{{ argocd_token.json.token }}"
+
+- name: ArgoCD Token For Sync
+  ansible.builtin.set_fact:
+    argocd_token_fact: "{{ argocd_token.json.token }}"

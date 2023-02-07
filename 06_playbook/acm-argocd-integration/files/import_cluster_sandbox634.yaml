@@ -1,0 +1,49 @@
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  name: sandbox634
+  labels:
+    name: sandbox634
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: gitops
+  annotations: {}
+spec:
+  hubAcceptsClient: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auto-import-secret
+  namespace: sandbox634
+stringData:
+  autoImportRetry: "2"
+  token: sha256~9hN2hj0f6Wl9gi2WdFNgTyMhp_N5m3tdpNGo1AO8onQ
+  server: https://api.cluster-nj2m2.nj2m2.sandbox634.opentlc.com:6443
+type: Opaque
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: sandbox634
+  namespace: sandbox634
+spec:
+  clusterName: sandbox634
+  clusterNamespace: sandbox634
+  clusterLabels:
+    name: sandbox634
+    cloud: auto-detect
+    vendor: auto-detect
+    cluster.open-cluster-management.io/clusterset: gitops
+  applicationManager:
+    enabled: true
+    argocdCluster: false
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  certPolicyController:
+    enabled: true
+  iamPolicyController:
+    enabled: true

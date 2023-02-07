@@ -1,0 +1,15 @@
+---
+# -  name: Validate parameters
+#    ansible.builtin.assert:
+#       that:
+#          - mce_namespace is defined
+#          - files_folder is defined
+#       quiet: true
+
+# -  name: "Deploy the MCH"
+#    ansible.builtin.command: >
+#       oc apply -f "{{ files_folder }}"/multi_cluster_hub.yaml
+#    register: multi_cluster_hub
+
+# - debug: msg="{{ multi_cluster_hub.stdout }}"
+

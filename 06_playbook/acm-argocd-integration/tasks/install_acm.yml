@@ -1,0 +1,42 @@
+---
+- name: Validate parameters
+  ansible.builtin.assert:
+    that:
+      - acm_namespace is defined
+      - acm_operator_group is defined
+    quiet: true
+
+# - name: Check for an existing deployment
+#   become: yes
+#   ansible.builtin.stat:
+#     path: "{{  }}"
+#   register: existing_acm_deploy
+
+- name: "Use the ACM Namespace or Create it if does not exist"
+  ansible.builtin.command: >
+     oc create namespace "{{ acm_namespace }}" || oc project "{{ acm_namespace }}"
+  become: yes
+  when: existing_acm_deploy == "asd"
+
+# # Template the actions cli to override variables
+# - name: Replace the variables in the the templates files
+#   template:
+#     src:  "{{ local_path.stat.path }}/roles/keycloak/templates/actions.cli.j2"
+#     dest: "{{ keycloak_jboss_home }}/extensions/actions.cli"
+
+- name: "Create the resources on the Cluster"
+  ansible.builtin.command: >
+     oc apply -f "{{ files_folder }}"/acm_operator-group.yaml
+     oc apply -f "{{ files_folder }}"/acm_subscription.yaml
+  become: yes
+
+# - name: Check if deployment is ready
+#   become: yes
+#   ansible.builtin.stat:
+#     path: "{{  }}"
+#   register: existing_acm_deploy
+
+- name: "Deploy the ACM Operator"
+  ansible.builtin.command: >
+     oc apply -f "{{ files_folder }}"/acm_custom-resource.yaml
+  become: yes

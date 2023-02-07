@@ -1,0 +1,36 @@
+---
+- name: Validate parameters
+  ansible.builtin.assert:
+    that:
+      - integration_namespace is defined
+      - files_folder is defined
+      - cluster_name is defined
+    quiet: true
+    
+# - name: Check for an existing deployment
+#   become: yes
+#   ansible.builtin.stat:
+#     path: "{{  }}"
+#   register: existing_acm_deploy
+
+- name: "Use the ACM Namespace"
+  ansible.builtin.command: >
+    oc project "{{ integration_namespace }}"
+  register: namespace_integration
+
+- debug: msg="{{ namespace_integration.stdout }}"
+
+
+# # Template the actions cli to override variables
+# - name: Replace the variables in the the templates files
+#   template:
+#     src:  "{{ local_path.stat.path }}/roles/keycloak/templates/actions.cli.j2"
+#     dest: "{{ keycloak_jboss_home }}/extensions/actions.cli"
+
+- name: "import_remotecluster"
+  ansible.builtin.command: >
+    oc apply -f "{{ files_folder }}"/import_cluster_"{{ item }}".yaml
+  register: import_cluster
+  loop: "{{ cluster_name }}"
+
+- debug: msg="{{ import_cluster }}"

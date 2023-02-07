@@ -1,0 +1,58 @@
+---
+- name: Validate parameters
+  ansible.builtin.assert:
+    that:
+      - integration_namespace is defined
+      - files_folder is defined
+    quiet: true
+    
+# - name: Check for an existing deployment
+#   become: yes
+#   ansible.builtin.stat:
+#     path: "{{  }}"
+#   register: existing_acm_deploy
+
+- name: "Use the ACM Namespace or Create it if does not exist"
+  ansible.builtin.command: >
+    oc project "{{ integration_namespace }}"
+  register: namespace_integration
+
+- debug: msg="{{ namespace_integration.stdout }}"
+
+- name: Pause for 2 minutes to wait for the resources
+  ansible.builtin.pause:
+    minutes: 2
+
+# # Template the actions cli to override variables
+# - name: Replace the variables in the the templates files
+#   template:
+#     src:  "{{ local_path.stat.path }}/roles/keycloak/templates/actions.cli.j2"
+#     dest: "{{ keycloak_jboss_home }}/extensions/actions.cli"
+
+- name: "Create the resource managedclusterset on the Cluster"
+  ansible.builtin.command: >
+     oc apply -f "{{ files_folder }}"/integration_managedclusterset.yaml
+  register: apply_managedclusterset
+
+- debug: msg="{{ apply_managedclusterset.stdout }}"
+
+- name: "Create the resource managedclustersetbinding on the Cluster"
+  ansible.builtin.command: >
+     oc apply -f "{{ files_folder }}"/integration_managedclustersetbinding.yaml
+  register: apply_managedclustersetbinding
+
+- debug: msg="{{ apply_managedclustersetbinding.stdout }}"
+
+- name: "Create the resource acm-placement on the Cluster"
+  ansible.builtin.command: >
+     oc apply -f "{{ files_folder }}"/integration_placement.yaml
+  register: apply_placement
+
+- debug: msg="{{ apply_placement.stdout }}"
+
+- name: "Create the resource acm-gitopscluster on the Cluster"
+  ansible.builtin.command: >
+     oc apply -f "{{ files_folder }}"/integration_gitopscluster.yaml
+  register: apply_gitopscluster
+
+- debug: msg="{{ apply_gitopscluster.stdout }}"

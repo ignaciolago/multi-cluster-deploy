@@ -1,4 +1,0 @@
----
-resources:
-- gitops_namespace.yaml
-- gitops_subscription.yaml

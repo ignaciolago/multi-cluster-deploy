@@ -1,6 +1,0 @@
-# ACM hub cluster namespace
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: open-cluster-management

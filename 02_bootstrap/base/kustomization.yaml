@@ -1,7 +1,0 @@
----
-bases:
-- ./acm_operator/base
-- ./openshift/base
-- ./acm_multiclusterhub/base
-- ./gitops_operator/base
-- ./gitops_acm/base

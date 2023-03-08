@@ -1,4 +1,0 @@
----
-resources:
-- pipelines_subscription.yaml
-- pipelines_tektonconfig.yaml

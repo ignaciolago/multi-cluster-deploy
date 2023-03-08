@@ -1,6 +1,0 @@
----
-resources:
-- scheduler.yaml
-
-patchesStrategicMerge:
-- scheduler-patch.yaml
